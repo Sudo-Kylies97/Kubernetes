@@ -1,0 +1,34 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: kyle-nodeapp-service 
+spec:
+  selector:
+    app: kyle-nodeapp
+  ports:
+    - # Port accessible inside cluster
+      port: 8080
+      # Port to forward to inside the pod
+      targetPort: 4000 #target port will be port that app is listening on
+      # Port accessible outside cluster
+      nodePort: 30005
+  type: LoadBalancer
+ 
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kyle-nodeapp-deployment 
+spec:
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: kyle-nodeapp
+    spec:
+      containers:
+        - name: kyle-nodeapp-container 
+          image: tangentkyle/node-test
+          ports:
+            - containerPort: 4000 #because the app is set to listen on 4000
